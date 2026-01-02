@@ -2,12 +2,30 @@
 
 Node.js gateway plus two backend services that simulate a retail catalog/fulfillment workflow. The repo shows how I structure microservices for Kubernetes with health probes, Docker images, and GitHub Actions coverage.
 
+## Quick smoke test
+
+```bash
+bash -c 'npm --prefix service1 ci && npm --prefix service1 test && \
+        npm --prefix service2 ci && npm --prefix service2 test && \
+        npm --prefix gateway ci && npm --prefix gateway test && \
+        curl -s http://localhost:4000/healthz || true'
+```
+
+This installs dependencies, runs unit tests for all services, and finally pings the gateway health endpoint so you know everything compiled before diving into multi-terminal dev flows.
+
 ## Architecture
 
 - **Gateway** (`gateway/`) exposes `/api/aggregate`, fans out to the backend services, and reports health via `/healthz`.
 - **Inventory service** (`service1/`) returns product availability with timestamps and configurable messages.
 - **Fulfillment service** (`service2/`) surfaces build metadata and uptime checks so operators can verify rollouts.
 - **Kubernetes manifests** (`k8s/*.yaml`) create Deployments and Services for each component with readiness/liveness probes and resource guardrails.
+
+## Request flow
+
+1. Client hits `GET /api/aggregate` on the gateway.
+2. Gateway fans out to `service1` (`/api/service1`) for catalog data and `service2` (`/api/service2`) for fulfillment status.
+3. Responses are combined, enriched with build metadata, and returned to the caller.
+4. `/healthz` endpoints on every service feed readiness probes and dashboards.
 
 ## Repository layout
 
