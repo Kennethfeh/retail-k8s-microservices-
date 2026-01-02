@@ -1,6 +1,6 @@
 # Retail Kubernetes Microservices
 
-Node.js gateway plus two backend services that simulate a retail catalog/fulfillment workflow. The repo shows how I structure microservices for Kubernetes with health probes, Docker images, and GitHub Actions coverage.
+Node.js gateway plus two backend services that simulate a retail catalog/fulfillment workflow. Demonstrates how the microservices are structured for Kubernetes with health probes, Docker images, and GitHub Actions coverage.
 
 ## Quick smoke test
 
@@ -85,7 +85,7 @@ Each Deployment defines readiness/liveness probes, memory/CPU requests, and sepa
 
 - `npm test` inside each directory uses the Node test runner + Supertest.
 - The workflow job `retail_k8s_microservices` installs dependencies per service, runs eslint + unit tests, builds Docker images, and dry-runs `kubectl apply` with `azure/setup-kubectl`.
-- Fail-fast loops mean a regression in one service stops the rest of the pipeline, mirroring how I stage multicomponent deploys in production.
+- Fail-fast loops mean a regression in one service stops the rest of the pipeline, mirroring production-style gating for multicomponent deploys.
 
 ## Operations notes
 
