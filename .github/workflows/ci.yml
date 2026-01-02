@@ -1,0 +1,39 @@
+name: Retail Microservices CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install and test services
+        run: |
+          set -e
+          for dir in service1 service2 gateway; do
+            echo "Running $dir"
+            (cd "$dir" && npm ci && npm run lint && npm test)
+          done
+      - name: Docker builds
+        run: |
+          set -e
+          for dir in service1 service2 gateway; do
+            docker build -t "retail-$dir:ci" "$dir"
+          done
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v4
+        with:
+          version: v1.28.3
+      - name: Kubernetes manifest validation
+        run: |
+          for file in k8s/*.yaml; do
+            echo "Validating $file"
+            kubectl apply --dry-run=client -f "$file"
+          done
