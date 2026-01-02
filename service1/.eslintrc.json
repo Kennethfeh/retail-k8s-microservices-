@@ -1,0 +1,11 @@
+{
+  "env": {
+    "node": true,
+    "es2021": true
+  },
+  "extends": ["standard"],
+  "rules": {
+    "no-console": ["error", { "allow": ["info", "error"] }],
+    "semi": ["error", "always"]
+  }
+}

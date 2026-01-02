@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service2
+  namespace: microservices
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: service2
+  template:
+    metadata:
+      labels:
+        app: service2
+    spec:
+      containers:
+        - name: service2
+          image: kennethfeh/service2:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 4002
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 4002
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 4002
+            initialDelaySeconds: 15
+            periodSeconds: 20
